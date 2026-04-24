@@ -33,7 +33,8 @@ WebRTC to stream the desktop to connected users.`,
 
 func init() {
 	// Configure zerolog to use console writer for human-readable output
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	// Also include timestamps so it's easier to correlate logs with events
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})
 
 	// Bind configuration flags
 	config.Bind(rootCmd)
