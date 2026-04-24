@@ -34,7 +34,8 @@ WebRTC to stream the desktop to connected users.`,
 func init() {
 	// Configure zerolog to use console writer for human-readable output
 	// Also include timestamps so it's easier to correlate logs with events
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"})
+	// Using RFC3339 format for timestamps to make log parsing easier
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "2006-01-02 15:04:05"})
 
 	// Bind configuration flags
 	config.Bind(rootCmd)
@@ -69,8 +70,9 @@ func run(cmd *cobra.Command, args []string) {
 	log.Info().Str("bind", cfg.Bind).Msg("neko server is running")
 
 	// Wait for interrupt signal to gracefully shut down the server
+	// Also handle SIGHUP so the process isn't killed by terminal hangup
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	<-quit
 
 	log.Info().Msg("shutting down neko server")
